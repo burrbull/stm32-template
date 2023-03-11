@@ -2,8 +2,10 @@
 // note that template and Rhai variables are separate!
 let chip = variable::get("chip").to_lower();
 
-let ram_address = "0x20000000";
+let ram_address = 0x20000000;
 let ccram_address = "0x10000000";
+let itcm_address = "0x00000000";
+let dtcm_address = ram_address;
 let flash_address = "0x08000000";
 let flash_lit = chip[10];
 let flash = switch flash_lit.to_upper() {
@@ -27,8 +29,8 @@ let hal;
 let chipserie;
 let chipfamily;
 let ccram = 0;
-let dtcmram = 0;
-let itcmram = 0;
+let dtcm = 0;
+let itcm = 0;
 let backupram = 0;
 let ram;
 if chip.starts_with("stm32f4") {
@@ -84,24 +86,25 @@ if chip.starts_with("stm32f4") {
     switch chipserie {
         "stm32f722" | "stm32f723" | "stm32f730" | "stm32f732" | "stm32f733" => {
             ram = 256;
-            dtcmram = 64;
+            dtcm = 64;
         }
         "stm32f745" | "stm32f746" | "stm32f750" | "stm32f756" => {
             ram = 320;
-            dtcmram = 64;
+            dtcm = 64;
         }
         "stm32f765" | "stm32f767" | "stm32f768" | "stm32f769" | "stm32f777" | "stm32f778" | "stm32f779" => {
             ram = 512;
-            dtcmram = 128;
+            dtcm = 128;
         }
     }
-    itcmram = 16;
+    itcm = 16;
     backupram = 4;
 } else {
     throw "Unknown chip";
 };
+ram_address += dtcm*1024;
 ram -= ccram;
-ram -= dtcmram;
+ram -= dtcm;
 let hal_ = hal;
 
 let probe_rs_chip = chip.sub_string(0,12).to_upper() + "x";
@@ -115,7 +118,16 @@ if ccram > 0 {
     memory_blocks += `  CCMRAM (rwx) : ORIGIN = ${ccram_address}, LENGTH = {ccram}K`
 };
 memory_blocks += "\n";
-memory_blocks += `  RAM (rwx) : ORIGIN = ${ram_address}, LENGTH = ${ram}K`;
+memory_blocks += `  RAM (rwx) : ORIGIN = 0x${ram_address.to_hex()}, LENGTH = ${ram}K`;
+
+if itcm > 0 {
+    memory_blocks += "\n";
+    memory_blocks += `  ITCM : ORIGIN = ${itcm_address}, LENGTH = ${itcm}K /* Instruction Tighly Coupled Memory */`;
+}
+if dtcm > 0 {
+    memory_blocks += "\n";
+    memory_blocks += `  DTCM : ORIGIN = 0x${dtcm_address.to_hex()}, LENGTH = ${dtcm}K /* Data Tighly Coupled Memory */`;
+}
 
 debug(`Linker memory blocks:
 ${memory_blocks}`);
@@ -125,4 +137,6 @@ variable::set("chipserie", chipserie);
 variable::set("CHIP", probe_rs_chip);
 variable::set("hal", hal);
 variable::set("hal_", hal_);
+variable::set("itcm", itcm > 0);
+variable::set("dtcm", dtcm > 0);
 variable::set("memory_blocks", memory_blocks);

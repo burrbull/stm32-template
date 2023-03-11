@@ -4,6 +4,29 @@ MEMORY
 {{ memory_blocks }}
 }
 
+{% if dtcm or itcm %}SECTIONS
+{
+{% if itcm %}
+  .itcm : ALIGN(4)
+  {
+      *(.itcm .itcm.*);
+      . = ALIGN(4);
+  } > ITCM
+{% endif %}{% if dtcm %}
+  .dtcm : ALIGN(4)
+  {
+      *(.dtcm .dtcm.*);
+      . = ALIGN(4);
+  } > DTCM
+{% endif %}
+}{% endif %}
+
+{% if dtcm %}/* You can then use something like this to place a variable into a specific section of memory:
+ *  #[link_section = ".dtcm.BUFFER"]
+ *  static mut BUF: [u8; 1024] = [3u8; 1024];
+ *  Verifiable with: cargo size --release --example hello_world -- -A
+ */
+{% endif %}
 /* This is where the call stack will be allocated. */
 /* The stack is of the full descending type. */
 /* NOTE Do NOT modify `_stack_start` unless you know what you are doing */
