@@ -5,8 +5,8 @@ let chip = variable::get("chip").to_lower();
 let ram_address = "0x20000000";
 let ccram_address = "0x10000000";
 let flash_address = "0x08000000";
-let flash_size_lit = chip[10];
-let flash_size = switch flash_size_lit.to_upper() {
+let flash_lit = chip[10];
+let flash = switch flash_lit.to_upper() {
     '4' => 16,
     '6' => 32,
     '8' => 64,
@@ -25,43 +25,55 @@ let flash_size = switch flash_size_lit.to_upper() {
 let hal;
 let chipserie;
 let chipfamily;
-let ccram_size = 0;
-let ram_size;
+let ccram = 0;
+let dtcmram = 0;
+let itcmram = 0;
+let ram;
 if chip.starts_with("stm32f4") {
     hal = "stm32f4xx-hal";
     chipfamily = "stm32f4";
     chipserie = chip.sub_string(0,9);
     switch chipserie {
         "stm32f401" => {
-            ram_size = switch flash_size {
+            ram = switch flash {
                 128 | 256 => 64,
                 384 | 512 => 96,
             };
         }
         "stm32f405" | "stm32f407" | "stm32f415" | "stm32f417" => {
-            ram_size = 192;
+            ram = 192; // +4
+            ccram = 64;
         }
         "stm32f410" => {
-            ram_size = 32;
+            ram = 32;
         }
-        "stm32f411" | "stm32f446" => {
-            ram_size = 128;
+        "stm32f411" => {
+            ram = 128;
         }
-        "stm32f412" | "stm32f427" | "stm32f429" | "stm32f437" | "stm32f439" => {
-            ram_size = 256;
+        "stm32f412" => {
+            ram = 256;
+        }
+        "stm32f427" | "stm32f429" | "stm32f437" | "stm32f439" => {
+            ram = 256; // +4
+            ccram = 64;
         }
         "stm32f413" | "stm32f423" => {
-            ram_size = 320;
+            ram = 320;
         }
-        "stm32f467" | "stm32f479" => {
-            ram_size = 384;
+        "stm32f446" => {
+            ram = 128; // +4
+        }
+        "stm32f469" | "stm32f479" => {
+            ram = 384; // +4
+            ccram = 64;
         }
         _ => throw "Unknown RAM size",
     }
 } else {
     throw "Unknown chip";
 };
-ram_size -= ccram_size;
+ram -= ccram;
+ram -= dtcmram;
 let hal_ = hal;
 
 let probe_rs_chip = chip.sub_string(0,12).to_upper() + "x";
@@ -70,13 +82,13 @@ let target = "thumbv7em-none-eabihf";
 hal_.replace("-", "_");
 debug(`Microcontroller family: ${chipserie}`);
 
-let memory_blocks = `  FLASH (rx) : ORIGIN = ${flash_address}, LENGTH = ${flash_size}K`;
-if ccram_size > 0 {
+let memory_blocks = `  FLASH (rx) : ORIGIN = ${flash_address}, LENGTH = ${flash}K`;
+if ccram > 0 {
     memory_blocks += "\n";
-    memory_blocks += `  CCMRAM (rwx) : ORIGIN = ${ccram_address}, LENGTH = {ccram_size}K`
+    memory_blocks += `  CCMRAM (rwx) : ORIGIN = ${ccram_address}, LENGTH = {ccram}K`
 };
 memory_blocks += "\n";
-memory_blocks += `  RAM (rwx) : ORIGIN = ${ram_address}, LENGTH = ${ram_size}K`;
+memory_blocks += `  RAM (rwx) : ORIGIN = ${ram_address}, LENGTH = ${ram}K`;
 
 debug(`Linker memory blocks:
 ${memory_blocks}`);
