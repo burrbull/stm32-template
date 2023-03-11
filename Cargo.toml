@@ -1,0 +1,21 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+authors = ["{{authors}}"]
+edition = "2021"
+
+[dependencies]
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+panic-halt = "0.2.0"
+{% if rtic %}cortex-m-rtic = "1.1"{% endif %}
+
+[dependencies.{{hal}}]
+version = "0.14.0"
+features = [
+"{{ chipserie }}", {% if rtic %}"rtic", {% endif %}
+]
+
+# Set the default for dependencies.
+[profile.dev.package."*"]
+opt-level = "s"

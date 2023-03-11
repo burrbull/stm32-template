@@ -1,0 +1,15 @@
+[placeholders.rtic]
+type = "bool"
+prompt = "Is it RTIC-based application?"
+default = true
+
+[placeholders.chip]
+type = "string"
+prompt = "What microcontroller name?"
+#choices = ["", ""]
+default = "stm32f411ceu6"
+
+[hooks]
+#init = [...]
+pre = ["pre-script.rhai"]
+#post = [...]

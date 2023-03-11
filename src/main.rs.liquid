@@ -1,0 +1,54 @@
+#![deny(unsafe_code)]
+#![no_main]
+#![no_std]
+
+// Halt on panic
+use panic_halt as _;
+{% if rtic %}
+#[rtic::app(device = {{ hal_ }}::pac, peripherals = true)]
+mod app {
+    use {{ hal_ }}::{
+        prelude::*,
+    };
+
+    #[shared]
+    struct Shared {}
+
+    // Local resources go here
+    #[local]
+    struct Local {}
+
+    #[init]
+    fn init(mut ctx: init::Context) -> (Shared, Local, init::Monotonics) {
+        (
+            Shared {
+               // Initialization of shared resources go here
+            },
+            Local {
+                // Initialization of local resources go here
+            },
+            init::Monotonics()
+        )
+    }
+
+    // Optional idle, can be removed if not needed.
+    #[idle]
+    fn idle(_: idle::Context) -> ! {
+        loop {
+            continue;
+        }
+    }
+}
+{% else %}
+use cortex_m_rt::entry;
+use {{ hal_ }}::{
+    pac,
+    prelude::*,
+};
+
+#[allow(clippy::empty_loop)]
+#[entry]
+fn main() -> ! {
+    loop {}
+}
+{% endif %}

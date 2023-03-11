@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "preLaunchTask": "${defaultBuildTask}",
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "probe-rs-debugger",
+            // "server": "127.0.0.1:50001", // For connecting to an existing probe-rs-debugger process
+            "chip": "{{ CHIP }}",
+            "cwd": "${workspaceFolder}",
+            "coreConfigs": [
+                {
+                    "coreIndex": 0,
+                    "programBinary": "${workspaceFolder}/target/{{ target }}/debug/f411-test",
+                    "svdFile": "{{ chipserie }}.svd.patched",
+                    "rttEnabled": true,
+                    "rttChannelFormats": [
+                        {
+                            "dataFormat": "String",
+                            "channelNumber": 0,
+                            "showTimestamps": true
+                        }
+                    ],
+                },
+            ],
+            "runtimeExecutable": "probe-rs-debugger",
+            "flashingConfig": {
+                "flashingEnabled": true,
+                "resetAfterFlashing": true,
+                "haltAfterReset": false,
+            },
+            "connectUnderReset": false,
+            "consoleLogLevel": "Info",
+            "speed": 2000 // CONFIGURE: Optionally update USB speed
+        },
+    ]
+}
