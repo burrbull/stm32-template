@@ -22,14 +22,17 @@ let flash = switch flash_lit.to_upper() {
     _ => throw "Unknown FLASH size",
 };
 
+let target;
 let hal;
 let chipserie;
 let chipfamily;
 let ccram = 0;
 let dtcmram = 0;
 let itcmram = 0;
+let backupram = 0;
 let ram;
 if chip.starts_with("stm32f4") {
+    target = "thumbv7em-none-eabihf";
     hal = "stm32f4xx-hal";
     chipfamily = "stm32f4";
     chipserie = chip.sub_string(0,9);
@@ -41,8 +44,9 @@ if chip.starts_with("stm32f4") {
             };
         }
         "stm32f405" | "stm32f407" | "stm32f415" | "stm32f417" => {
-            ram = 192; // +4
+            ram = 192;
             ccram = 64;
+            backupram = 4;
         }
         "stm32f410" => {
             ram = 32;
@@ -54,21 +58,45 @@ if chip.starts_with("stm32f4") {
             ram = 256;
         }
         "stm32f427" | "stm32f429" | "stm32f437" | "stm32f439" => {
-            ram = 256; // +4
+            ram = 256;
             ccram = 64;
+            backupram = 4;
         }
         "stm32f413" | "stm32f423" => {
             ram = 320;
         }
         "stm32f446" => {
-            ram = 128; // +4
+            ram = 128;
+            backupram = 4;
         }
         "stm32f469" | "stm32f479" => {
-            ram = 384; // +4
+            ram = 384;
             ccram = 64;
+            backupram = 4;
         }
         _ => throw "Unknown RAM size",
     }
+} else if chip.starts_with("stm32f7") {
+    target = "thumbv7em-none-eabihf";
+    hal = "stm32f7xx-hal";
+    chipfamily = "stm32f7";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32f722" | "stm32f723" | "stm32f730" | "stm32f732" | "stm32f733" => {
+            ram = 256;
+            dtcmram = 64;
+        }
+        "stm32f745" | "stm32f746" | "stm32f750" | "stm32f756" => {
+            ram = 320;
+            dtcmram = 64;
+        }
+        "stm32f765" | "stm32f767" | "stm32f768" | "stm32f769" | "stm32f777" | "stm32f778" | "stm32f779" => {
+            ram = 512;
+            dtcmram = 128;
+        }
+    }
+    itcmram = 16;
+    backupram = 4;
 } else {
     throw "Unknown chip";
 };
@@ -78,7 +106,6 @@ let hal_ = hal;
 
 let probe_rs_chip = chip.sub_string(0,12).to_upper() + "x";
 
-let target = "thumbv7em-none-eabihf";
 hal_.replace("-", "_");
 debug(`Microcontroller family: ${chipserie}`);
 
