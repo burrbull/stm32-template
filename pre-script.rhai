@@ -1,6 +1,6 @@
 // we can see existing variables.
 // note that template and Rhai variables are separate!
-let chip = variable::get("chip");
+let chip = variable::get("chip").to_lower();
 
 let ram_address = "0x20000000";
 let ccram_address = "0x10000000";
