@@ -253,6 +253,31 @@ if chip.starts_with("stm32f1") {
         _ => throw "Unknown RAM size",
     }
     ram_address = 0x20000000;
+} else if chip.starts_with("stm32l4") {
+    target = "thumbv7em-none-eabihf";
+    hal = "stm32l4xx-hal";
+    hal_version = "0.7.1";
+    chipfamily = "stm32l4";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32l412" | "stm32l422" => {
+            ram = 32+8;
+        }
+        "stm32l431" | "stm32l432" | "stm32l433" | "stm32l442" | "stm32l443" => {
+            ram = 48+16;
+        }
+        "stm32l451" | "stm32l452" | "stm32l462"  => {
+            ram = 160;
+        }
+        "stm32l471" | "stm32l475" | "stm32l476" | "stm32l486"  => {
+            ram = 128;
+        }
+        "stm32l496" | "stm32l4a6" => {
+            ram = 256+64;
+        }
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
 } else {
     throw "Unknown chip";
 };
