@@ -430,6 +430,26 @@ if chip.starts_with("stm32f0") {
         _ => throw "Unknown RAM size",
     }
     ram_address = 0x20000000;
+} else if chip.starts_with("stm32wl") {
+    target = "thumbv7em-none-eabihf";
+    hal = "stm32wlxx-hal";
+    hal_version = "0.6.1";
+    chipfamily = "stm32wl";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32wl54" | "stm32wl55" => {
+            ram = 32+32;
+        }
+        "stm32wle4" | "stm32wle5" => {
+            ram = switch flash {
+                64 => 0+20,
+                128 => 16+32,
+                256 => 32+32,
+            };
+        }
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
 } else {
     throw "Unknown chip";
 };
@@ -473,9 +493,10 @@ switch version_type {
 }
 hal_dependency += "\n";
 hal_dependency += "features = [";
-if chip.starts_with("stm32l0") {
+// TODO: fix features
+if chipfamily == "stm32l0" {
     hal_dependency += `"mcu-${CHIP}", `;
-} else if chip.starts_with("stm32f3") {
+} else if chipfamily == "stm32f3" {
     let feature = chipserie + 'x' + flash_lit.to_lower();
     hal_dependency += `"${feature}", `;
 } else {
