@@ -1,7 +1,7 @@
 [placeholders.rtic]
 type = "bool"
 prompt = "Is it RTIC-based application?"
-default = true
+default = false
 
 [placeholders.chip]
 type = "string"
