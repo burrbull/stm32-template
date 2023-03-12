@@ -3,6 +3,8 @@
 let chip = variable::get("chip").to_lower();
 let version_type = variable::get("version");
 
+let has_rtic_feature = false;
+
 let ram_address;
 let ccram_address = "0x10000000";
 let itcm_address = "0x00000000";
@@ -10,6 +12,7 @@ let dtcm_address = 0x20000000;
 let flash_address = "0x08000000";
 let flash_lit = chip[10];
 let flash = switch flash_lit.to_upper() {
+    '3' => 8,
     '4' => 16,
     '6' => 32,
     '8' => 64,
@@ -76,6 +79,7 @@ if chip.starts_with("stm32f1") {
         }
     }
     ram_address = 0x20000000;
+    has_rtic_feature = true;
 } else if chip.starts_with("stm32f3") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32f3xx-hal";
@@ -186,6 +190,7 @@ if chip.starts_with("stm32f1") {
         _ => throw "Unknown RAM size",
     }
     ram_address = 0x20000000;
+    has_rtic_feature = true;
 } else if chip.starts_with("stm32f7") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32f7xx-hal";
@@ -209,6 +214,7 @@ if chip.starts_with("stm32f1") {
     ram_address += dtcm*1024;
     itcm = 16;
     backupram = 4;
+    has_rtic_feature = true;
 /*} else if chip.starts_with("stm32h7") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32h7xx-hal";
@@ -267,6 +273,26 @@ if chip.starts_with("stm32f1") {
         }
         "stm32c031" => {
             ram = 12;
+        }
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
+} else if chip.starts_with("stm32l0") {
+    target = "thumbv6m-none-eabi";
+    hal = "stm32l0xx-hal";
+    hal_version = "0.10.0";
+    chipfamily = "stm32l0";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32l010" | "stm32l011" | "stm32l021" | "stm32l031" | "stm32l041" | "stm32l051" | "stm32l052" | "stm32l053" | "stm32l062" | "stm32l063" => {
+            ram = switch flash {
+                8 | 16 => 2,
+                32 | 64 => 8,
+                128 => 20,
+            };
+        }
+        "stm32l071" | "stm32l072" | "stm32l073" | "stm32l081" | "stm32l082" | "stm32l083" => {
+            ram = 20;
         }
         _ => throw "Unknown RAM size",
     }
@@ -338,8 +364,16 @@ switch version_type {
     }
 }
 hal_dependency += "\n";
-hal_dependency += `features = ["${chipserie}", `;
-if variable::get("rtic") {
+hal_dependency += "features = [";
+if chip.starts_with("stm32l0") {
+    hal_dependency += `"mcu-${CHIP}", `;
+} else if chip.starts_with("stm32f3") {
+    let feature = chipserie + 'x' + flash_lit.to_lower();
+    hal_dependency += `"${feature}", `;
+} else {
+    hal_dependency += `"${chipserie}", `;
+}
+if variable::get("rtic") && has_rtic_feature {
     hal_dependency += "\"rtic\", "
 }
 hal_dependency += "]";
