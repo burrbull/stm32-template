@@ -34,7 +34,48 @@ let dtcm = 0;
 let itcm = 0;
 let backupram = 0;
 let ram;
-if chip.starts_with("stm32f3") {
+if chip.starts_with("stm32f1") {
+    target = "thumbv7m-none-eabi";
+    hal = "stm32f1xx-hal";
+    hal_version = "0.10.0";
+    chipfamily = "stm32f1";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32f100" => {
+            ram = switch flash {
+                16 | 32 => 4,
+                64 | 128 => 8,
+                256 => 24,
+                384 | 512 => 32,
+            };
+        }
+        "stm32f101" | "stm32f102" => {
+            ram = switch flash {
+                16 => 4,
+                32 => 6,
+                64 => 10,
+                128 => 16,
+                256 => 32,
+                384 | 512 => 48,
+                768 | 1024 => 80,
+            };
+        }
+        "stm32f103" => {
+            ram = switch flash {
+                16 => 6,
+                32 => 10,
+                64 | 128 => 20,
+                256 => 48,
+                384 | 512 => 64,
+                768 | 1024 => 96,
+            };
+        }
+        "stm32f105" | "stm32f107" => {
+            ram = 64;
+        }
+    }
+    ram_address = 0x20000000;
+} else if chip.starts_with("stm32f3") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32f3xx-hal";
     hal_version = "0.9.2";
