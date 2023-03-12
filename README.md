@@ -8,6 +8,14 @@ To build embedded programs using this template you'll need:
 
 - The `cargo generate` subcommand. [Installation
   instructions](https://github.com/cargo-generate/cargo-generate#installation).
+``` console
+$ cargo install cargo-generate
+```
+
+- Flash and run/debug tools:
+``` console
+$ cargo install cargo-embed cargo-flash probe-rs-debugger probe-run
+```
 
 - `rust-std` components (pre-compiled `core` crate) for the ARM Cortex-M
   targets. Run:
@@ -28,8 +36,19 @@ $ cargo generate --git https://github.com/burrbull/stm32-template/
 
 3. Your program is ready to compile:
 ``` console
-cargo build --release
+$ cargo build --release
 ```
+
+## Flash and run/debug
+
+You can flash your firmware using one of those tools:
+
+- `cargo flash --release` — just flash
+- `cargo run --release` — flash and run using `probe-run` runner
+- `cargo embed --release` — multifunctional tool for flash and debug
+
+You also can debug your firmware on device from VS Code with [probe-rs-debugger](https://probe.rs/docs/tools/vscode/) extention.
+You will need SVD specification for your chip for this. You can load patched SVD files [here](https://stm32-rs.github.io/stm32-rs/).
 
 ## Contribution
 
