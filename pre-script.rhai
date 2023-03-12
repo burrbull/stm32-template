@@ -254,6 +254,23 @@ if chip.starts_with("stm32f1") {
         _ => throw "Unknown RAM size",
     }
     ram_address = 0x20000000;
+} else if chip.starts_with("stm32c0") {
+    target = "thumbv6m-none-eabi";
+    hal = "stm32c0xx-hal";
+    version_type = "git"; // not released yet
+    hal_version = "0.0.0";
+    chipfamily = "stm32c0";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32c011" => {
+            ram = 6;
+        }
+        "stm32c031" => {
+            ram = 12;
+        }
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
 } else if chip.starts_with("stm32l4") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32l4xx-hal";
