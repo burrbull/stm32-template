@@ -34,7 +34,70 @@ let dtcm = 0;
 let itcm = 0;
 let backupram = 0;
 let ram;
-if chip.starts_with("stm32f4") {
+if chip.starts_with("stm32f3") {
+    target = "thumbv7em-none-eabihf";
+    hal = "stm32f3xx-hal";
+    hal_version = "0.9.2";
+    chipfamily = "stm32f3";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32f301" | "stm32f318" => {
+            ram = 16;
+        }
+        "stm32f302" => {
+            ram = switch flash {
+                32 | 64 => 16,
+                128 => 32,
+                256 => 40,
+                384 | 512 => 64,
+            };
+        }
+        "stm32f303" => {
+            switch flash {
+                32 | 64 => {
+                    ram = 12;
+                    ccram = 4;
+                },
+                128 => {
+                    ram = 32;
+                    ccram = 8;
+                }
+                256 => {
+                    ram = 40;
+                    ccram = 8;
+                }
+                384 | 512 => {
+                    ram = 64;
+                    ccram = 16;
+                }
+            }
+        }
+        "stm32f328" | "stm32f334" => {
+            ram = 12;
+            ccram = 4;
+        },
+        "stm32f358" => {
+            ram = 40;
+            ccram = 8;
+        },
+        "stm32f373" => {
+            ram = switch flash {
+                64 => 16,
+                128 => 24,
+                256 => 32,
+            };
+        }
+        "stm32f378" => {
+            ram = 32;
+        },
+        "stm32f398" => {
+            ram = 64;
+            ccram = 16;
+        },
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
+} else if chip.starts_with("stm32f4") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32f4xx-hal";
     hal_version = "0.14.0";
@@ -112,13 +175,16 @@ if chip.starts_with("stm32f4") {
     chipserie = chip.sub_string(0,9);
     switch chipserie {
         "stm32h723" | "stm32h725" | "stm32h730" | "stm32h733" | "stm32h735" => {
+            axi = 128;
+            itcm_axi = 196;
             ram = 16+16;
             ram4 = 16;
             dtcm = 128;
         }
     }
-    itcm = 16;
+    itcm = 64;
     backupram = 4;
+    itcm_axi_address = 0x24020000; // 0x00010000
     axi_address = 0x24000000;
     ram_address = 0x30000000;
     ram4_address = 0x38000000;
