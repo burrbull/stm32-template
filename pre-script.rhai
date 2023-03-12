@@ -38,7 +38,39 @@ let dtcm = 0;
 let itcm = 0;
 let backupram = 0;
 let ram;
-if chip.starts_with("stm32f1") {
+if chip.starts_with("stm32f0") {
+    target = "thumbv6m-none-eabi";
+    hal = "stm32f0xx-hal";
+    hal_version = "0.18.0";
+    chipfamily = "stm32f0";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32f030" | "stm32f031" | "stm32f038" => {
+            ram = switch flash {
+                16 | 32 => 4,
+                64 => 8,
+                256 => 32,
+            };
+        }
+        "stm32f042" | "stm32f048" => {
+            ram = 6;
+        }
+        "stm32f051" | "stm32f058" => {
+            ram = 8;
+        }
+        "stm32f070" | "stm32f071" | "stm32f072" | "stm32f078" => {
+            ram = switch flash {
+                32 => 6,
+                64 | 128 => 16,
+            };
+        }
+        "stm32f091" | "stm32f098" => {
+            ram = 32;
+        }
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
+} else if chip.starts_with("stm32f1") {
     target = "thumbv7m-none-eabi";
     hal = "stm32f1xx-hal";
     hal_version = "0.10.0";
@@ -256,6 +288,29 @@ if chip.starts_with("stm32f1") {
         }
         "stm32g0b0" | "stm32g0b1" | "stm32g0c1"=> {
             ram = 128; // 144
+        }
+        _ => throw "Unknown RAM size",
+    }
+    ram_address = 0x20000000;
+} else if chip.starts_with("stm32g4") {
+    target = "thumbv7em-none-eabihf";
+    hal = "stm32g4xx-hal";
+    version_type = "git"; // not released yet
+    hal_version = "0.0.0";
+    chipfamily = "stm32g4";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32g431" | "stm32g441"  => {
+            ram = 16+6+10;
+            //ccram = 10;
+        }
+        "stm32g473" | "stm32g474" | "stm32g483" | "stm32g484" => {
+            ram = 80+16+32;
+            //ccram = 32;
+        }
+        "stm32g491" | "stm32g4a1" => {
+            ram = 80+16+16;
+            //ccram = 16;
         }
         _ => throw "Unknown RAM size",
     }
