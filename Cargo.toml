@@ -10,11 +10,7 @@ cortex-m-rt = "0.7"
 panic-halt = "0.2.0"
 {% if rtic %}cortex-m-rtic = "1.1"{% endif %}
 
-[dependencies.{{ hal }}]
-version = "{{ hal_version }}"
-features = [
-"{{ chipserie }}", {% if rtic %}"rtic", {% endif %}
-]
+{{ hal_dependency }}
 
 # Set the default for dependencies.
 [profile.dev.package."*"]

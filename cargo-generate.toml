@@ -1,3 +1,9 @@
+[placeholders.version]
+type = "string"
+prompt = "What HAL version to use?"
+choices = ["last-release", "git"]
+default = "last-release"
+
 [placeholders.rtic]
 type = "bool"
 prompt = "Is it RTIC-based application?"

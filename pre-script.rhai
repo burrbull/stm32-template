@@ -1,6 +1,7 @@
 // we can see existing variables.
 // note that template and Rhai variables are separate!
 let chip = variable::get("chip").to_lower();
+let version_type = variable::get("version");
 
 let ram_address;
 let ccram_address = "0x10000000";
@@ -308,11 +309,30 @@ if dtcm > 0 {
 debug(`Linker memory blocks:
 ${memory_blocks}`);
 
+let hal_dependency = `[dependencies.${hal}]`;
+switch version_type {
+    "last-release" => {
+        hal_dependency += "\n";
+        hal_dependency += `version = "${hal_version}"`;
+    }
+    "git" => {
+        hal_dependency += "\n";
+        hal_dependency += `git = "https://github.com/stm32-rs/${hal}"`;
+    }
+}
+hal_dependency += "\n";
+hal_dependency += `features = ["${chipserie}", `;
+if variable::get("rtic") {
+    hal_dependency += "\"rtic\", "
+}
+hal_dependency += "]";
+
+
 variable::set("target", target);
 variable::set("chipserie", chipserie);
 variable::set("CHIP", probe_rs_chip);
 variable::set("hal", hal);
-variable::set("hal_version", hal_version);
+variable::set("hal_dependency", hal_dependency);
 variable::set("hal_", hal_);
 variable::set("itcm", itcm > 0);
 variable::set("dtcm", dtcm > 0);
