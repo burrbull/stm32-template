@@ -2,10 +2,10 @@
 // note that template and Rhai variables are separate!
 let chip = variable::get("chip").to_lower();
 
-let ram_address = 0x20000000;
+let ram_address;
 let ccram_address = "0x10000000";
 let itcm_address = "0x00000000";
-let dtcm_address = ram_address;
+let dtcm_address = 0x20000000;
 let flash_address = "0x08000000";
 let flash_lit = chip[10];
 let flash = switch flash_lit.to_upper() {
@@ -26,6 +26,7 @@ let flash = switch flash_lit.to_upper() {
 
 let target;
 let hal;
+let hal_version;
 let chipserie;
 let chipfamily;
 let ccram = 0;
@@ -36,6 +37,7 @@ let ram;
 if chip.starts_with("stm32f4") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32f4xx-hal";
+    hal_version = "0.14.0";
     chipfamily = "stm32f4";
     chipserie = chip.sub_string(0,9);
     switch chipserie {
@@ -46,7 +48,7 @@ if chip.starts_with("stm32f4") {
             };
         }
         "stm32f405" | "stm32f407" | "stm32f415" | "stm32f417" => {
-            ram = 192;
+            ram = 112+16;
             ccram = 64;
             backupram = 4;
         }
@@ -60,51 +62,71 @@ if chip.starts_with("stm32f4") {
             ram = 256;
         }
         "stm32f427" | "stm32f429" | "stm32f437" | "stm32f439" => {
-            ram = 256;
+            ram = 112+16+64;
             ccram = 64;
             backupram = 4;
         }
         "stm32f413" | "stm32f423" => {
-            ram = 320;
+            ram = 256+64;
         }
         "stm32f446" => {
-            ram = 128;
+            ram = 112+16;
             backupram = 4;
         }
         "stm32f469" | "stm32f479" => {
-            ram = 384;
+            ram = 160+32+128;
             ccram = 64;
             backupram = 4;
         }
         _ => throw "Unknown RAM size",
     }
+    ram_address = 0x20000000;
 } else if chip.starts_with("stm32f7") {
     target = "thumbv7em-none-eabihf";
     hal = "stm32f7xx-hal";
+    hal_version = "0.7.0";
     chipfamily = "stm32f7";
     chipserie = chip.sub_string(0,9);
     switch chipserie {
         "stm32f722" | "stm32f723" | "stm32f730" | "stm32f732" | "stm32f733" => {
-            ram = 256;
+            ram = 176+16;
             dtcm = 64;
         }
         "stm32f745" | "stm32f746" | "stm32f750" | "stm32f756" => {
-            ram = 320;
+            ram = 240+16;
             dtcm = 64;
         }
         "stm32f765" | "stm32f767" | "stm32f768" | "stm32f769" | "stm32f777" | "stm32f778" | "stm32f779" => {
-            ram = 512;
+            ram = 368+16;
+            dtcm = 128;
+        }
+    }
+    ram_address += dtcm*1024;
+    itcm = 16;
+    backupram = 4;
+/*} else if chip.starts_with("stm32h7") {
+    target = "thumbv7em-none-eabihf";
+    hal = "stm32h7xx-hal";
+    hal_version = "0.7.0";
+    chipfamily = "stm32h7";
+    chipserie = chip.sub_string(0,9);
+    switch chipserie {
+        "stm32h723" | "stm32h725" | "stm32h730" | "stm32h733" | "stm32h735" => {
+            ram = 16+16;
+            ram4 = 16;
             dtcm = 128;
         }
     }
     itcm = 16;
     backupram = 4;
+    axi_address = 0x24000000;
+    ram_address = 0x30000000;
+    ram4_address = 0x38000000;
+    backup_address = 0x38800000;
+    */
 } else {
     throw "Unknown chip";
 };
-ram_address += dtcm*1024;
-ram -= ccram;
-ram -= dtcm;
 let hal_ = hal;
 
 let probe_rs_chip = chip.sub_string(0,12).to_upper() + "x";
@@ -122,11 +144,11 @@ memory_blocks += `  RAM (rwx) : ORIGIN = 0x${ram_address.to_hex()}, LENGTH = ${r
 
 if itcm > 0 {
     memory_blocks += "\n";
-    memory_blocks += `  ITCM : ORIGIN = ${itcm_address}, LENGTH = ${itcm}K /* Instruction Tighly Coupled Memory */`;
+    memory_blocks += `  ITCM (rwx) : ORIGIN = ${itcm_address}, LENGTH = ${itcm}K /* Instruction Tighly Coupled Memory */`;
 }
 if dtcm > 0 {
     memory_blocks += "\n";
-    memory_blocks += `  DTCM : ORIGIN = 0x${dtcm_address.to_hex()}, LENGTH = ${dtcm}K /* Data Tighly Coupled Memory */`;
+    memory_blocks += `  DTCM (rwx) : ORIGIN = 0x${dtcm_address.to_hex()}, LENGTH = ${dtcm}K /* Data Tighly Coupled Memory */`;
 }
 
 debug(`Linker memory blocks:
@@ -136,6 +158,7 @@ variable::set("target", target);
 variable::set("chipserie", chipserie);
 variable::set("CHIP", probe_rs_chip);
 variable::set("hal", hal);
+variable::set("hal_version", hal_version);
 variable::set("hal_", hal_);
 variable::set("itcm", itcm > 0);
 variable::set("dtcm", dtcm > 0);
