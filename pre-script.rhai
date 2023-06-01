@@ -450,7 +450,7 @@ debug(`Microcontroller family: ${chipserie}`);
 let memory_blocks = `  FLASH (rx) : ORIGIN = ${flash_address}, LENGTH = ${flash}K`;
 if ccram > 0 {
     memory_blocks += "\n";
-    memory_blocks += `  CCMRAM (rwx) : ORIGIN = ${ccram_address}, LENGTH = {ccram}K`
+    memory_blocks += `  CCMRAM (rwx) : ORIGIN = ${ccram_address}, LENGTH = ${ccram}K`
 };
 memory_blocks += "\n";
 memory_blocks += `  RAM (rwx) : ORIGIN = 0x${ram_address.to_hex()}, LENGTH = ${ram}K`;
