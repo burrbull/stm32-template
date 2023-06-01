@@ -176,7 +176,7 @@ switch chipfamily {
     "stm32f4" => {
         target = "thumbv7em-none-eabihf";
         hal = "stm32f4xx-hal";
-        hal_version = "0.15.0";
+        hal_version = "0.16.0";
         switch chipserie {
             "stm32f401" => {
                 ram = switch flash {
@@ -290,7 +290,7 @@ switch chipfamily {
         target = "thumbv7em-none-eabihf";
         hal = "stm32g4xx-hal";
         version_type = "git"; // not released yet
-        hal_version = "0.0.0";
+        hal_version = "0.0.1";
         switch chipserie {
             "stm32g431" | "stm32g441"  => {
                 ram = 16+6+10;
