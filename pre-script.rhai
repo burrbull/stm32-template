@@ -176,7 +176,7 @@ switch chipfamily {
     "stm32f4" => {
         target = "thumbv7em-none-eabihf";
         hal = "stm32f4xx-hal";
-        hal_version = "0.16.0";
+        hal_version = "0.17.1";
         switch chipserie {
             "stm32f401" => {
                 ram = switch flash {
