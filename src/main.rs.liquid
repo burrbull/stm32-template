@@ -2,8 +2,13 @@
 #![no_main]
 #![no_std]
 
+{% if defmt_enabled %}
+// Print panic message to probe console
+use panic_probe as _;
+{% else %}
 // Halt on panic
 use panic_halt as _;
+{% endif  %}
 {% if rtic %}
 #[rtic::app(device = {{ hal_ }}::pac, peripherals = true)]
 mod app {

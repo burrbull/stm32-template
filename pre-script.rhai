@@ -4,6 +4,7 @@ let chip = variable::get("chip").to_lower();
 let version_type = variable::get("version");
 
 let has_rtic_feature = false;
+let has_defmt_feature = false;
 
 let ram_address;
 let ccram_address = "0x10000000";
@@ -172,6 +173,7 @@ switch chipfamily {
             _ => throw "Unknown RAM size",
         }
         ram_address = 0x20000000;
+        has_defmt_feature = true;
     }
     "stm32f4" => {
         target = "thumbv7em-none-eabihf";
@@ -219,6 +221,7 @@ switch chipfamily {
         }
         ram_address = 0x20000000;
         has_rtic_feature = true;
+        has_defmt_feature = true;
     }
     "stm32f7" => {
         target = "thumbv7em-none-eabihf";
@@ -263,6 +266,7 @@ switch chipfamily {
         ram_address = 0x30000000;
         ram4_address = 0x38000000;
         backup_address = 0x38800000;
+        has_defmt_feature = true;
         
     }*/
     "stm32g0" => {
@@ -307,6 +311,7 @@ switch chipfamily {
             _ => throw "Unknown RAM size",
         }
         ram_address = 0x20000000;
+        has_defmt_feature = true;
     }
     "stm32c0" => {
         target = "thumbv6m-none-eabi";
@@ -491,6 +496,9 @@ if chipfamily == "stm32l0" {
 }
 if variable::get("rtic") && has_rtic_feature {
     hal_dependency += "\"rtic\", "
+}
+if variable::get("defmt_enabled") && has_defmt_feature {
+    hal_dependency += "\"defmt\", "
 }
 hal_dependency += "]";
 

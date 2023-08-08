@@ -9,6 +9,11 @@ type = "bool"
 prompt = "Is it RTIC-based application?"
 default = false
 
+[placeholders.defmt_enabled]
+type = "bool"
+prompt = "Will this program use defmt logger?"
+default = false
+
 [placeholders.chip]
 type = "string"
 prompt = "What microcontroller name?"
