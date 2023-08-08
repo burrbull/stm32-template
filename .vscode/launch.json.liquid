@@ -12,7 +12,6 @@
             "coreConfigs": [
                 {
                     "coreIndex": 0,
-                    "programBinary": "${workspaceFolder}/target/{{ target }}/debug/f411-test",
                     "svdFile": "{{ chipserie }}.svd.patched",
                     "rttEnabled": true,
                     "rttChannelFormats": [
@@ -24,15 +23,19 @@
                     ],
                 },
             ],
-            "runtimeExecutable": "probe-rs-debugger",
+            "runtimeExecutable": "probe-rs",
+            "runtimeArgs": ["dap-server"],
             "flashingConfig": {
-                "flashingEnabled": true,
-                "resetAfterFlashing": true,
-                "haltAfterReset": false,
+              "flashingEnabled": true,
+              "haltAfterReset": false,
+              "formatOptions": {
+                "format": "elf" //!MODIFY (or remove). Valid values are: 'bin', 'hex', 'elf'(default), 'idf'
+              }
             },
             "connectUnderReset": false,
-            "consoleLogLevel": "Info",
-            "speed": 2000 // CONFIGURE: Optionally update USB speed
+            "consoleLogLevel": "Console" //Info, Debug
+            //"speed": 24000, //!MODIFY (or remove)
+            //"probe": "VID:PID:<Serial>", //!MODIFY (or remove)
         },
     ]
 }
