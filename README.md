@@ -45,10 +45,10 @@ $ cargo build --release
 You can flash your firmware using one of those tools:
 
 - `cargo flash --release` — just flash
-- `cargo run --release` — flash and run using `probe-run` runner
+- `cargo run --release` — flash and run using `probe-run` runner or `probe-rs run` runner which you can set in `.cargo/config.toml`
 - `cargo embed --release` — multifunctional tool for flash and debug
 
-You also can debug your firmware on device from VS Code with [probe-rs-debugger](https://probe.rs/docs/tools/vscode/) extention.
+You also can debug your firmware on device from VS Code with [probe-rs](https://probe.rs/docs/tools/vscode/) extention or with `probe-rs gdb` command.
 You will need SVD specification for your chip for this. You can load patched SVD files [here](https://stm32-rs.github.io/stm32-rs/).
 
 ## Contribution
