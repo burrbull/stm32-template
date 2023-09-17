@@ -241,7 +241,7 @@ switch chipfamily {
                 dtcm = 128;
             }
         }
-        ram_address += dtcm*1024;
+        ram_address = dtcm_address + dtcm*1024;
         itcm = 16;
         backupram = 4;
         has_rtic_feature = true;

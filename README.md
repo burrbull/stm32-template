@@ -15,7 +15,6 @@ $ cargo install cargo-generate
 - Flash and run/debug tools:
 ``` console
 $ cargo install probe-rs --features cli
-$ cargo install probe-run
 ```
 
 - `rust-std` components (pre-compiled `core` crate) for the ARM Cortex-M
@@ -45,7 +44,7 @@ $ cargo build --release
 You can flash your firmware using one of those tools:
 
 - `cargo flash --release` — just flash
-- `cargo run --release` — flash and run using `probe-run` runner or `probe-rs run` runner which you can set in `.cargo/config.toml`
+- `cargo run --release` — flash and run using `probe-rs run` runner or `probe-run` runner (deprecated) which you can set in `.cargo/config.toml`
 - `cargo embed --release` — multifunctional tool for flash and debug
 
 You also can debug your firmware on device from VS Code with [probe-rs](https://probe.rs/docs/tools/vscode/) extention or with `probe-rs gdb` command.
