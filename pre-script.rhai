@@ -3,7 +3,7 @@
 let chip = variable::get("chip").to_lower();
 let version_type = variable::get("version");
 
-let has_rtic_feature = false;
+let rtic_feature = "";
 let has_defmt_feature = false;
 
 let ram_address;
@@ -110,12 +110,12 @@ switch chipfamily {
             }
         }
         ram_address = 0x20000000;
-        has_rtic_feature = true;
+        rtic_feature = "rtic";
     }
     "stm32f3" => {
         target = "thumbv7em-none-eabihf";
         hal = "stm32f3xx-hal";
-        hal_version = "0.9.2";
+        hal_version = "0.10.0";
         switch chipserie {
             "stm32f301" | "stm32f318" => {
                 ram = 16;
@@ -178,7 +178,7 @@ switch chipfamily {
     "stm32f4" => {
         target = "thumbv7em-none-eabihf";
         hal = "stm32f4xx-hal";
-        hal_version = "0.17.1";
+        hal_version = "0.20.0";
         switch chipserie {
             "stm32f401" => {
                 ram = switch flash {
@@ -220,7 +220,7 @@ switch chipfamily {
             _ => throw "Unknown RAM size",
         }
         ram_address = 0x20000000;
-        has_rtic_feature = true;
+        rtic_feature = "rtic1";
         has_defmt_feature = true;
     }
     "stm32f7" => {
@@ -244,12 +244,12 @@ switch chipfamily {
         ram_address = dtcm_address + dtcm*1024;
         itcm = 16;
         backupram = 4;
-        has_rtic_feature = true;
+        rtic_feature = "rtic";
     }
     /*"stm32h7" => {
         target = "thumbv7em-none-eabihf";
         hal = "stm32h7xx-hal";
-        hal_version = "0.7.0";
+        hal_version = "0.15.1";
         switch chipserie {
             "stm32h723" | "stm32h725" | "stm32h730" | "stm32h733" | "stm32h735" => {
                 axi = 128;
@@ -494,8 +494,8 @@ if chipfamily == "stm32l0" {
 } else {
     hal_dependency += `"${chipserie}", `;
 }
-if variable::get("rtic") && has_rtic_feature {
-    hal_dependency += "\"rtic\", "
+if variable::get("rtic") && rtic_feature {
+    hal_dependency += "\"${rtic_feature}\", "
 }
 if variable::get("defmt_enabled") && has_defmt_feature {
     hal_dependency += "\"defmt\", "
