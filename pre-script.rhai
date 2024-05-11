@@ -495,7 +495,7 @@ if chipfamily == "stm32l0" {
     hal_dependency += `"${chipserie}", `;
 }
 if variable::get("rtic") && !(rtic_feature.is_empty()) {
-    hal_dependency += "\"${rtic_feature}\", "
+    hal_dependency += `"${rtic_feature}", `
 }
 if variable::get("defmt_enabled") && has_defmt_feature {
     hal_dependency += "\"defmt\", "
