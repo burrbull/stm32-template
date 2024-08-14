@@ -487,7 +487,7 @@ hal_dependency += "\n";
 hal_dependency += "features = [";
 // TODO: fix features
 if chipfamily == "stm32l0" {
-    hal_dependency += `"mcu-${CHIP}", `;
+    hal_dependency += `"mcu-${probe_rs_chip}", `;
 } else if chipfamily == "stm32f3" {
     let feature = chipserie + 'x' + flash_lit.to_lower();
     hal_dependency += `"${feature}", `;
