@@ -9,12 +9,34 @@
              * but we need to provide a label for it,
              * so we can invoke it from the debug launcher.
              */
-            "label": "cargo_build",
+            "label": "cargo_build_release",
             "type": "process",
             "command": "cargo",
             "args": [
                 "build",
                 "--release",
+                "--features",
+                "${config:rust-analyzer.cargo.features}"
+            ],
+            "problemMatcher": [
+                "$rustc",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            /*
+             * This is the default cargo build task,
+             * but we need to provide a label for it,
+             * so we can invoke it from the debug launcher.
+             */
+            "label": "cargo_build_debug",
+            "type": "process",
+            "command": "cargo",
+            "args": [
+                "build",
                 "--features",
                 "${config:rust-analyzer.cargo.features}"
             ],
