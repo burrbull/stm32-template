@@ -11,6 +11,7 @@
             "cwd": "${workspaceFolder}",
             "coreConfigs": [
                 {
+                    "programBinary": "target/{{ target }}/debug/{{ project-name }}",
                     "coreIndex": 0,
                     "svdFile": "{{ chipserie }}.svd.patched",
                     "rttEnabled": true,
@@ -47,6 +48,7 @@
             "cwd": "${workspaceFolder}",
             "coreConfigs": [
                 {
+                    "programBinary": "target/{{ target }}/release/{{ project-name }}",
                     "coreIndex": 0,
                     "svdFile": "{{ chipserie }}.svd.patched",
                     "rttEnabled": true,
