@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "preLaunchTask": "${defaultBuildTask}",
+            "preLaunchTask": "cargo_build_debug",
             "type": "probe-rs-debug",
             "request": "launch",
             "name": "probe-rs-debugger",
@@ -11,6 +11,44 @@
             "cwd": "${workspaceFolder}",
             "coreConfigs": [
                 {
+                    "programBinary": "target/{{ target }}/debug/{{ project-name }}",
+                    "coreIndex": 0,
+                    "svdFile": "{{ chipserie }}.svd.patched",
+                    "rttEnabled": true,
+                    "rttChannelFormats": [
+                        {
+                            "dataFormat": "String",
+                            "channelNumber": 0,
+                            "showTimestamps": true
+                        }
+                    ],
+                },
+            ],
+            "runtimeExecutable": "probe-rs",
+            "runtimeArgs": ["dap-server"],
+            "flashingConfig": {
+              "flashingEnabled": true,
+              "haltAfterReset": false,
+              "formatOptions": {
+                "format": "elf" //!MODIFY (or remove). Valid values are: 'bin', 'hex', 'elf'(default), 'idf'
+              }
+            },
+            "connectUnderReset": false,
+            "consoleLogLevel": "Console" //Info, Debug
+            //"speed": 24000, //!MODIFY (or remove)
+            //"probe": "VID:PID:<Serial>", //!MODIFY (or remove)
+        },
+        {
+            "preLaunchTask": "cargo_build_release",
+            "type": "probe-rs-debug",
+            "request": "launch",
+            "name": "probe-rs-release",
+            // "server": "127.0.0.1:50001", // For connecting to an existing probe-rs-debugger process
+            "chip": "{{ CHIP }}",
+            "cwd": "${workspaceFolder}",
+            "coreConfigs": [
+                {
+                    "programBinary": "target/{{ target }}/release/{{ project-name }}",
                     "coreIndex": 0,
                     "svdFile": "{{ chipserie }}.svd.patched",
                     "rttEnabled": true,

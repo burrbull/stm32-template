@@ -12,6 +12,9 @@ cortex-m-rt = "0.7"
 
 {{ hal_dependency }}
 
+[build-dependencies]
+reqwest = { version = "0.11", features = ["blocking"] }
+
 # Set the default for dependencies.
 [profile.dev.package."*"]
 opt-level = "s"
