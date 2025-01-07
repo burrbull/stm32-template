@@ -31,6 +31,7 @@ let flash = switch flash_lit.to_upper() {
 
 let chipfamily = chip.sub_string(0,7);
 let chipserie = chip.sub_string(0,9);
+let svd_chipserie = chipserie;
 let target;
 let hal;
 let hal_version;
@@ -44,6 +45,7 @@ switch chipfamily {
         target = "thumbv6m-none-eabi";
         hal = "stm32f0xx-hal";
         hal_version = "0.18.0";
+        svd_chipserie = chipfamily + "x" + chipserie.sub_string(8,9);
         switch chipserie {
             "stm32f030" | "stm32f031" | "stm32f038" => {
                 ram = switch flash {
@@ -505,6 +507,7 @@ hal_dependency += "]";
 
 variable::set("target", target);
 variable::set("chipserie", chipserie);
+variable::set("svd_chipserie", svd_chipserie);
 variable::set("CHIP", probe_rs_chip);
 variable::set("hal", hal);
 variable::set("hal_dependency", hal_dependency);

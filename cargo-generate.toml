@@ -1,3 +1,9 @@
+[placeholders.chip]
+type = "string"
+prompt = "What microcontroller name?"
+#choices = ["", ""]
+default = "stm32f411ceu6"
+
 [placeholders.version]
 type = "string"
 prompt = "What HAL version to use?"
@@ -14,11 +20,10 @@ type = "bool"
 prompt = "Will this program use defmt logger?"
 default = false
 
-[placeholders.chip]
-type = "string"
-prompt = "What microcontroller name?"
-#choices = ["", ""]
-default = "stm32f411ceu6"
+[placeholders.svd]
+type = "bool"
+prompt = "Do you want to load SVD and add it to VSCode task?"
+default = false
 
 [hooks]
 #init = [...]

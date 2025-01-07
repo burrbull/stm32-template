@@ -1,15 +1,17 @@
+{% if svd %}
 use std::env;
 use std::fs;
 use std::io::Write;
 use std::path::Path;
+{% endif  %}
 
 fn main() {
+    {% if svd %}
     // Retrieve the target chip series from the environment variable
-    let target = env::var("CHIPSERIE").expect("CHIPSERIE not provided");
+    let target = "{{ svd_chipserie }}.svd";
 
-    let filename = format!("{}.svd.patched", target);
-    let url = format!("https://stm32-rs.github.io/stm32-rs/{}", &filename);
-    let output_path = Path::new(&filename);
+    let output_path = Path::new(&format!("{target}.svd"));
+    let url = format!("https://stm32-rs.github.io/stm32-rs/{target}.patched");
 
     // Check if the file already exists
     if output_path.exists() {
@@ -35,4 +37,5 @@ fn main() {
 
         println!("SVD file saved to {:?}", output_path);
     }
+    {% endif  %}
 }
