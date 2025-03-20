@@ -10,7 +10,8 @@ fn main() {
     // Retrieve the target chip series from the environment variable
     let target = "{{ svd_chipserie }}.svd";
 
-    let output_path = Path::new(&format!("{target}.svd"));
+    let file_name = format!("{target}.svd");
+    let output_path = Path::new(&file_name);
     let url = format!("https://stm32-rs.github.io/stm32-rs/{target}.patched");
 
     // Check if the file already exists
