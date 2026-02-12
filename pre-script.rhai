@@ -296,7 +296,7 @@ switch chipfamily {
         target = "thumbv7em-none-eabihf";
         hal = "stm32g4xx-hal";
         version_type = "git"; // not released yet
-        hal_version = "0.0.2";
+        hal_version = "0.1.0";
         switch chipserie {
             "stm32g431" | "stm32g441"  => {
                 ram = 16+6+10;
