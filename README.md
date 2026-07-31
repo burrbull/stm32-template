@@ -14,7 +14,7 @@ $ cargo install cargo-generate
 
 - Flash and run/debug tools:
 ``` console
-$ cargo install probe-rs --features cli
+$ cargo install probe-rs-tools --locked
 ```
 
 - `rust-std` components (pre-compiled `core` crate) for the ARM Cortex-M
